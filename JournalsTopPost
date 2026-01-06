@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>BJJ Journals Top Post</title>
+<style>
+  body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  #bjj-widget {
+    text-align: center;
+    max-width: 400px;
+    margin: 10px auto;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  #bjj-widget img {
+    width: 100%;
+    display: block;
+  }
+  #bjj-widget a {
+    text-decoration: none;
+    color: inherit;
+  }
+  #bjj-title {
+    font-weight: bold;
+    padding: 8px;
+    background: #fafafa;
+  }
+</style>
+</head>
+<body>
+<div id="bjj-widget">
+  <a id="bjj-link" href="#" target="_blank">
+    <img id="bjj-image" src="" alt="Loading...">
+    <div id="bjj-title">Loading...</div>
+  </a>
+</div>
+
+<script>
+async function loadTopBJJPost() {
+    const proxyUrl = 'https://api.allorigins.win/get?url=';
+    const targetUrl = encodeURIComponent('https://www.thebjjjournals.com/recent-posts');
+
+    try {
+        const response = await fetch(proxyUrl + targetUrl);
+        const data = await response.json();
+
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(data.contents, 'text/html');
+
+        // Adjust selector based on BJJ Journals structure
+        const firstPost = doc.querySelector('.recent-posts article, .post');
+        if(!firstPost) return;
+
+        const link = firstPost.querySelector('a')?.href || '#';
+        const img = firstPost.querySelector('img')?.src || '';
+        const title = firstPost.querySelector('h2, h3')?.innerText || 'BJJ Post';
+
+        document.getElementById('bjj-link').href = link;
+        document.getElementById('bjj-image').src = img;
+        document.getElementById('bjj-title').innerText = title;
+
+    } catch (err) {
+        console.error('Error loading BJJ Journals post:', err);
+        document.getElementById('bjj-title').innerText = 'Failed to load';
+    }
+}
+
+// Load on page ready
+loadTopBJJPost();
+</script>
+</body>
+</html>
